@@ -2,8 +2,6 @@
 
 ## Setting up AWS IOT Core
 
----
-
 ![AWS Core Image](/resources/aws-core.png)
 
 1. Created an IOT Thing on AWS Core `(ap-south-1)`
@@ -19,3 +17,30 @@
 
 5. Installed **pubsubclient** for MQTT connectivity
 6. Successfully connected to AWS IoT Core and subscribed to "outTopic" for data stream
+
+## Using a Flask Server as an API
+
+- MQTT architecture sends data to an AWS IoT Core livestream
+- Flask server (hosted on [ide.goorm.io](https://ide.goorm.io)) acts as a validated endpoint for AWS IoT Core to stream data from the outTopic topic
+- AWS IOT Core uses the `POST` route to send data to the live Flask server
+- server then uses `SQL` to store values in a database
+- a `GET` request exists to return most recent value in the updated `SQL` database
+
+**Instructions for running Flask Server**
+
+1. Initialise SQL Database
+
+```bash
+python3 init_db.py
+```
+
+2. Run Flask Application
+
+```bash
+new run flask
+```
+
+**Finally, we get the resulting API endpoint:**
+
+- [Flask Server — GET route](https://parth-iot-intro.run-ap-south1.goorm.io/aws_iot_get)
+  ![Flask GET request Image](/resources/flask-get.png)

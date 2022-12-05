@@ -148,9 +148,12 @@ int msgCount;
 void loop() {
 
   pubSubCheckConnect();
+  String speed = "34kmph";
+  String pressure = "20";
+  String gyro = "250";
 
   if (millis() - lastPublish > 10000) {
-    String msg = String("Hello from ESP8266: ") + ++msgCount;
+    String msg = String('{"speed":') + speed + String(', "pressure":') + pressure + String(', "gyro":') + gyro + String('}');
     pubSubClient.publish("outTopic", msg.c_str());
     Serial.print("Published: "); Serial.println(msg);
     lastPublish = millis();
@@ -193,3 +196,4 @@ void setCurrentTime() {
   gmtime_r(&now, &timeinfo);
   Serial.print("Current time: "); Serial.print(asctime(&timeinfo));
 }
+
