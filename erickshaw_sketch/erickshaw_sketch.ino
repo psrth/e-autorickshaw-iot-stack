@@ -128,6 +128,9 @@ void setup() {
   Serial.println();
   Serial.println("IOT Enabled Auto Rickshaws");
 
+  // WRITE CODE BELOW THIS
+
+
   Serial.print("Connecting to "); Serial.print(ssid);
   WiFi.begin(ssid, password);
   WiFi.waitForConnectResult();
@@ -146,20 +149,33 @@ unsigned long lastPublish;
 int msgCount;
 
 void loop() {
-
   pubSubCheckConnect();
-  String speed = "34kmph";
-  String pressure = "20";
-  String gyro = "250";
+  // WRITE CODE HERE
 
-  if (millis() - lastPublish > 10000) {
-    String msg = String('{"speed":') + speed + String(', "pressure":') + pressure + String(', "gyro":') + gyro + String('}');
+
+
+  // JSON format parsing strings
+  const char* speed1 = "{\"speed\": ";
+  const char* pressure1 = ", \"pressure\": ";
+  const char* gyro1 = ", \"gyro\": ";
+  const char* close = "}";
+
+  // values returned to the AWS Core
+  char* speed = "34";
+  char* pressure = "20";
+  char* gyro = "250";
+
+  // method to consolidate and publish data to AWS every 5 seconds
+  if (millis() - lastPublish > 5000) {
+    String msg = String(speed1) + String(speed) + String(pressure1) + String(pressure) + String(gyro1) + String(gyro) + String(close);
     pubSubClient.publish("outTopic", msg.c_str());
-    Serial.print("Published: "); Serial.println(msg);
+    Serial.print("Published: "); 
+    Serial.println(msg);
     lastPublish = millis();
   }
 }
 
+// handler to acknowledge AWS handshake
 void msgReceived(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message received on "); Serial.print(topic); Serial.print(": ");
   for (int i = 0; i < length; i++) {
@@ -168,6 +184,7 @@ void msgReceived(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 }
 
+// handler to connect to AWS IOT Core Endpoint
 void pubSubCheckConnect() {
   if ( ! pubSubClient.connected()) {
     Serial.print("PubSubClient connecting to: "); Serial.print(awsEndpoint);
@@ -181,6 +198,7 @@ void pubSubCheckConnect() {
   pubSubClient.loop();
 }
 
+// handler to set current time for certificate validation
 void setCurrentTime() {
   configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
