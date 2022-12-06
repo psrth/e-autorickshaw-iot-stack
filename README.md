@@ -1,6 +1,36 @@
 # E - Auto Rickshaw — IOT Tech Stack
 
-## Setting up AWS IOT Core
+## Overview
+
+## Architecture
+
+## Frontend
+
+The client application for the IoT E-Auto Rickshaw is built using **Next.js**, a modern web-app framework built on top of **React.js**.
+
+## Local Installation
+
+1. Navigate to the client repository.
+
+```
+cd e-autorickshaw-iot-stack/erickshaw-client
+```
+
+2. Install Node dependencies using **NPM**.
+
+```
+npm install
+```
+
+3. Run the Development Server.
+
+```
+npm run dev
+```
+
+## Backend and DevOps (Data Management, AWS IoT Core, MQTT and API)
+
+### Setting up AWS IOT Core
 
 ![AWS Core Image](/resources/aws-core.png)
 
@@ -18,7 +48,7 @@
 5. Installed **pubsubclient** for MQTT connectivity
 6. Successfully connected to AWS IoT Core and subscribed to "outTopic" for data stream
 
-## Using a Flask Server as an API
+### Using a Flask Server as an API
 
 - MQTT architecture sends data to an AWS IoT Core livestream
 - Flask server (hosted on [ide.goorm.io](https://ide.goorm.io)) acts as a validated endpoint for AWS IoT Core to stream data from the outTopic topic
@@ -31,13 +61,13 @@
 1. Initialise SQL Database
 
 ```bash
-python3 init_db.py
+> python3 init_db.py
 ```
 
 2. Run Flask Application
 
 ```bash
-new run flask
+> new run flask
 ```
 
 **Finally, we get the resulting API endpoint:**
