@@ -8,7 +8,7 @@
 
 The client application for the IoT E-Auto Rickshaw is built using **Next.js**, a modern web-app framework built on top of **React.js**.
 
-## Local Installation
+### Local Installation
 
 1. Navigate to the client repository.
 
@@ -27,6 +27,15 @@ npm install
 ```
 npm run dev
 ```
+
+### Deployment
+
+**Live Client Application**
+Client Application deploys live at [erickshaw-iot-stack](https://e-autorickshaw-iot-stack.vercel.app/).
+
+**Setup and Settings**
+The client app deploys using **[Vercel](https://vercel.com).** Deploy configuration shown below:
+![Vercel Config Image](/resources/vercel-config.png)
 
 ## Backend and DevOps (Data Management, AWS IoT Core, MQTT and API)
 
