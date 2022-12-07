@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Flex, Text, Image, useToast } from "@chakra-ui/react";
+import { Flex, Text, Image, useToast, Button } from "@chakra-ui/react";
 import Chart from "./Chart";
 import auto from "./auto.png";
 
 function App() {
   const [speed, setSpeed] = useState(["24.4", "22", "21"]);
+  const [count, setCount] = useState(3);
   const [speedLabels, setSpeedLabels] = useState(["1", "2", "3"]);
   const [crash, setCrash] = useState(0);
-  const [gryo, setGryo] = useState("25.54");
+  const [gyro, setGyro] = useState("25.54");
 
   const toast = useToast();
 
@@ -15,6 +16,9 @@ function App() {
     let temp = speed;
     temp.push(spt);
     setSpeed(temp);
+    let temp2 = speedLabels;
+    temp2.push(count);
+    setSpeedLabels(temp2);
   };
 
   const handleCrash = (crt) => {
@@ -22,41 +26,51 @@ function App() {
     else setCrash(0);
   };
 
+  const getData = () => {
+    fetch("https://parth-iot-intro.run-ap-south1.goorm.io/aws_iot_get", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) =>
+      response
+        .json()
+        .then((data) => ({
+          data: data,
+          status: response.status,
+        }))
+        .then((res) => {
+          if (res.status < 300) {
+            pushSpeedData(res.data.speed);
+            handleCrash(res.data.pressure);
+            setGyro(res.data.gyro);
+          } else {
+            toast({
+              title: "API Unresponsive.",
+              position: "top",
+              description: "An error occurred while retrieving data from API.",
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+            });
+          }
+        })
+    );
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      fetch("https://parth-iot-intro.run-ap-south1.goorm.io/aws_iot_get/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) =>
-        response
-          .json()
-          .then((data) => ({
-            data: data,
-            status: response.status,
-          }))
-          .then((res) => {
-            if (res.status < 300) {
-              pushSpeedData(res.data.speed);
-              handleCrash(res.data.pressure);
-              setGryo(res.data.gryo);
-            } else {
-              toast({
-                title: "API Unresponsive.",
-                position: "top",
-                description:
-                  "An error occurred while retrieving data from API.",
-                status: "error",
-                duration: 2000,
-                isClosable: true,
-              });
-            }
-          })
-      );
-    }, 5000);
+    getData();
     // eslint-disable-next-line
-  }, []);
+  }, [count]);
+
+  // const [time, setTime] = useState(Date.now());
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => setTime(Date.now()), 1000, 0);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   return (
     <Flex
@@ -85,6 +99,16 @@ function App() {
           </Text>
         </Flex>
 
+        <Button
+          m="20px 0"
+          bg="#4178F5"
+          color="white"
+          onClick={() => setCount(count + 1)}
+          width="100%"
+        >
+          Refresh
+        </Button>
+
         <Flex
           width="100%"
           flexDir="column"
@@ -100,14 +124,14 @@ function App() {
           </Text>
           <Flex flexDir="row" alignItems="flex-end">
             <Text fontWeight="900" fontSize="54px" color="#4178F5" mr="20px">
-              {speed[0]}
+              {speed.slice(-1)[0]}
             </Text>
             <Text color="#fff" fontWeight="700" fontSize="24px" mb="12px">
               m/sec
             </Text>
           </Flex>
           <Flex mt="20px" />
-          <Chart labels={speedLabels} data={speed} />
+          {count ? <Chart labels={speedLabels} data={speed} /> : null}
           <Flex mb="10px" />
         </Flex>
 
@@ -148,7 +172,7 @@ function App() {
             GYROSCOPE READING
           </Text>
           <Text color="#00DF67" fontWeight="700" fontSize="24px" mt="2px">
-            {gryo}
+            {gyro}
           </Text>
         </Flex>
 
