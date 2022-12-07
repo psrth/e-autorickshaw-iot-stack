@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import sqlite3
+from flask_cors import cross_origin, CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"*": {"origins": "*"}})
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -33,6 +35,7 @@ def aws_iot_post():
     }
 
 @app.route("/aws_iot_get", methods=["GET"])
+@cross_origin()
 def aws_iot_get():
     if request.method == "GET":
         conn = get_db_connection()
@@ -42,7 +45,9 @@ def aws_iot_get():
         response["speed"] = sensor_data["speed"]
         response["pressure"] = sensor_data["pressure"]
         response["gyro"] = sensor_data["gyro"]
-        return response
+        response2 = jsonify(response)
+        return response2
+    
     return {
         "error": "Method not allowed."
     }
