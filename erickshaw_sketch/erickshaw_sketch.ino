@@ -16,7 +16,16 @@
 #include "sntp.h"
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>    // Adafruit  sensor library
+#include <Adafruit_ADXL345_U.h>  // ADXL345 library
 
+// Hardware Initialisations
+int inPin = 13;   // choose the input pin (for a pushbutton)
+int val = 0;     // variable for reading the pin status
+int crash = 0;
+float roll;
+float pitch;
 // Connection to a WiFi Network
 const char* ssid = "Rishit's OnePlus";
 const char* password = "IMMA1234";
@@ -121,15 +130,23 @@ PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
 
 // -------------------------------------------------------------
 
+Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified();   // ADXL345 Object
+
 // PRIMARY CODE
 // -------------------------------------------------------------
 void setup() {
-  Serial.begin(115200); // setting baud rate to 115200
+  Serial.begin(9600); // resetting baud rate from 115200 (check if works)
   Serial.println();
   Serial.println("IOT Enabled Auto Rickshaws");
 
-  // WRITE CODE BELOW THIS
+pinMode(inPin, INPUT);    // declare pushbutton as input
 
+  // WRITE CODE BELOW THIS
+ if(!accel.begin())   // if ASXL345 sensor not found
+  {
+    Serial.println("ADXL345 not detected");
+    while(1);
+  }
 
   Serial.print("Connecting to "); Serial.print(ssid);
   WiFi.begin(ssid, password);
@@ -151,9 +168,27 @@ int msgCount;
 void loop() {
   pubSubCheckConnect();
   // WRITE CODE HERE
-
-
-
+  val = digitalRead(inPin);  // read input value
+  if (val == LOW) {         // check if the input is LOW (button released)
+    crash = 0;  // crash has not occured
+  } 
+  if(val == HIGH){
+    crash = 1;
+     }
+  sensors_event_t event;
+  accel.getEvent(&event);
+  Serial.print("X: ");
+  Serial.print(event.acceleration.x);
+  Serial.print("  ");
+  Serial.print("Y: ");
+  Serial.print(event.acceleration.y);
+  Serial.print("  ");
+  Serial.print("Z: ");
+  Serial.print(event.acceleration.z);
+  Serial.print("  ");
+  Serial.println("m/s^2 ");
+  delay(5000);
+  
   // JSON format parsing strings
   const char* speed1 = "{\"speed\": ";
   const char* pressure1 = ", \"pressure\": ";
@@ -161,13 +196,18 @@ void loop() {
   const char* close = "}";
 
   // values returned to the AWS Core
-  char* speed = "34";
-  char* pressure = "20";
-  char* gyro = "250";
+  // char* speed = "34";
+  String speed = String(event.acceleration.x);
+  String pressure = "20";
+  String gyro = "250";
+  roll = atan(event.acceleration.y / sqrt(pow(event.acceleration.x, 2) + pow(event.acceleration.z, 2))) * 180 / PI;
+  pitch = atan(-1 * event.acceleration.x / sqrt(pow(event.acceleration.y, 2) + pow(event.acceleration.y, 2))) * 180 / PI;
+  String PitchRoll = String(pitch);
+  //String Roll = 
 
   // method to consolidate and publish data to AWS every 5 seconds
   if (millis() - lastPublish > 5000) {
-    String msg = String(speed1) + String(speed) + String(pressure1) + String(pressure) + String(gyro1) + String(gyro) + String(close);
+    String msg = String(speed1) + String(speed) + String(pressure1) + String(crash) + String(gyro1) + String(PitchRoll) + String(close);
     pubSubClient.publish("outTopic", msg.c_str());
     Serial.print("Published: "); 
     Serial.println(msg);
@@ -214,4 +254,3 @@ void setCurrentTime() {
   gmtime_r(&now, &timeinfo);
   Serial.print("Current time: "); Serial.print(asctime(&timeinfo));
 }
-

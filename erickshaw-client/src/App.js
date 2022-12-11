@@ -22,7 +22,7 @@ function App() {
   };
 
   const handleCrash = (crt) => {
-    if (crt > 20) setCrash(1);
+    if (crt == 1) setCrash(1);
     else setCrash(0);
   };
 
@@ -120,11 +120,11 @@ function App() {
           p="20px 30px"
         >
           <Text color="#A3A3A3" fontWeight="600">
-            CURRENT SPEED
+            CURRENT ACCELERATION
           </Text>
           <Flex flexDir="row" alignItems="flex-end">
             <Text fontWeight="900" fontSize="54px" color="#4178F5" mr="20px">
-              {speed.slice(-1)[0]}
+              {Math.abs(speed.slice(-1)[0])}
             </Text>
             <Text color="#fff" fontWeight="700" fontSize="24px" mb="12px">
               m/sec
@@ -172,7 +172,7 @@ function App() {
             GYROSCOPE READING
           </Text>
           <Text color="#00DF67" fontWeight="700" fontSize="24px" mt="2px">
-            {gyro}
+            Pitch value is {gyro}
           </Text>
         </Flex>
 
