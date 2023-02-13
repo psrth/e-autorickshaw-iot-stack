@@ -83,7 +83,7 @@ function App() {
       pb="20px"
     >
       <Flex
-        width="90vw"
+        width={["90vw", "90vw", "380px", "380px", "380px"]}
         m="auto"
         flexDir="column"
         height="fit-content"
