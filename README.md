@@ -15,6 +15,8 @@ This project was built as a part of the course **Internet of Things [EEE F411]**
 - **Avi Tewari** — f20201220@pilani.bits-pilani.ac.in (hardware)
 - **Arjun Sinha** — f20200353@pilani.bits-pilani.ac.in (hardware)
 
+[Project Demo (YouTube)](https://www.youtube.com/watch?v=CwdnEVwMsB4)
+
 ## Functionality
 
 While our final project only implements certain parts of the proposed functionality due to monetary and time limitations, the proposed solution includes the following features.
